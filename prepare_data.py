@@ -8,12 +8,6 @@ pos_path = os.path.join(cwd,"pos")
 neg_path = os.path.join(cwd,"neg")
 anc_path = os.path.join(cwd,"anc")
 
-# make directories
-os.makedirs(pos_path,exist_ok=True)
-os.makedirs(neg_path,exist_ok=True)
-os.makedirs(anc_path,exist_ok=True)
-print(cwd)
-
 def download_data(url,cwd):
     os.makedirs(cwd,exist_ok=True)
     tarfile_path = os.path.join(cwd,"lfw.tar")
@@ -39,6 +33,11 @@ def switch_directory(cwd):
     # os.remove(os.path.join(cwd,'lfw'))
 
 if __name__=="__main__":
+    # make directories
+    os.makedirs(pos_path,exist_ok=True)
+    os.makedirs(neg_path,exist_ok=True)
+    os.makedirs(anc_path,exist_ok=True)
+    print(cwd)
     url = "http://vis-www.cs.umass.edu/lfw/lfw.tgz"
     download_data(url,cwd)
     switch_directory(cwd)
