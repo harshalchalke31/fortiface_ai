@@ -7,11 +7,12 @@ import torch
 
 
 class ImageDataset(Dataset):
-    def __init__(self, anc_path,pos_path,neg_path,transform=None):
+    def __init__(self, anc_path,pos_path,neg_path,transform=None,device=None):
         self.anchor_images=glob.glob(os.path.join(anc_path,'*.jpg'))[:500]
         self.positive_images=glob.glob(os.path.join(pos_path,'*.jpg'))[:500]
         self.negative_images=glob.glob(os.path.join(neg_path,'*.jpg'))[:500]
         self.transform=transform
+        self.device = device
 
         # combine positives and negatives with labels
         self.data=[]
@@ -29,8 +30,8 @@ class ImageDataset(Dataset):
         return len(self.data)
 
     def __getitem__(self, index):
-        anchor_path, pair_path = self.data(index)
-        label=self.labels(index)
+        anchor_path, pair_path = self.data[index]
+        label=self.labels[index]
 
         anchor_img = Image.open(anchor_path).convert("RGB")
         pair_img = Image.open(pair_path).convert("RGB")
@@ -38,5 +39,10 @@ class ImageDataset(Dataset):
         if self.transform:
             anchor_img=self.transform(anchor_img)
             pair_img=self.transform(pair_img)
-        
-        return anchor_img, pair_img, torch.tensor(label,dtype=torch.float32)
+
+        # Move tensors to GPU
+        anchor_img = anchor_img.to(self.device)
+        pair_img = pair_img.to(self.device)
+        label = torch.tensor(label, dtype=torch.float32).to(self.device)
+
+        return anchor_img, pair_img, label
